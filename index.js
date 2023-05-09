@@ -88,7 +88,7 @@ app.get('/', (req, res) => {
     res.render("index");
   }
   const name = req.session.name;
-  res.render("members", { name: name });
+  res.render("homeloggedin", { name: name });
 });
 
 app.get('/nosql-injection', async (req, res) => {
@@ -199,8 +199,10 @@ app.post("/loggingin", async (req, res) => {
 
   const result = await userCollection
     .find({ email: email })
-    .project({ name: 1, email: 1, password: 1, _id: 1 })
+    .project({ name: 1, email: 1, password: 1, user_type: 1, _id: 1 })
     .toArray();
+
+    console.log(result);
 
   console.log(result);
   if (result.length != 1) {
@@ -213,6 +215,7 @@ app.post("/loggingin", async (req, res) => {
     req.session.authenticated = true;
     req.session.email = email;
     req.session.name = result[0].name;
+    req.session.user_type = result[0].user_type;
     req.session.cookie.maxAge = expireTime;
 
     res.redirect("/loggedin");
@@ -250,13 +253,7 @@ app.get("/members", (req, res) => {
   const name = req.session.name;
   const image = imageURL[Math.floor(Math.random() * imageURL.length)];
 
-  const html = `
-      <h1>Hello, ${name}!</h1>
-      <img src="/${image}" alt="Random image">
-      <br><br>
-      <button onclick="window.location.href='/logout'">Log out</button>
-    `;
-  res.send(html);
+  res.render("members", { name: name, image: image });
 });
 
 const imageURL = [
@@ -274,7 +271,8 @@ app.get('/cat/:id', (req, res) => {
 
 
 app.get('/admin', sessionValidation, adminAuthorization, async (req, res) => {
-  const result = await userCollection.find().project({ username: 1, _id: 1 }).toArray();
+  const result = await userCollection.find().project({ name: 1, user_type: 1 }).toArray();
+  console.log(result)
 
   res.render("admin", { users: result });
 });
@@ -285,6 +283,8 @@ app.get("*", (req, res) => {
   res.status(404);
   res.render("404");
 })
+
+
 
 app.listen(port, () => {
   console.log("Node application listening on port " + port);
