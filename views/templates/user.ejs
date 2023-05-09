@@ -1,33 +1,7 @@
 <li>
     <%= user.name %> (<%= user.user_type %>)
-    <button class="btn btn-success rounded-pill px-3" type="button" data-user-id="<%= user._id %>">Promote to Admin</button>
-    <button class="btn btn-danger rounded-pill px-3" type="button" data-user-id="<%= user._id %>">Demote to User</button>
+    <button class="btn btn-success rounded-pill px-3" type="button">Promote to Admin</button>
+    <button class="btn btn-danger rounded-pill px-3" type="button">Demote to User</button>
   </li>
 
-  <script>
-    $(document).ready(function() {
-      // handle click events on the promote/demote buttons
-      $('button.btn-success').click(function() {
-        var userId = $(this).data('user-id');
-        $.ajax({
-          method: 'POST',
-          url: '/users/' + userId + '/promote',
-          success: function() {
-            // update the user_type on the page
-            $('button[data-user-id="' + userId + '"]').closest('li').find('span.user-type').text('admin');
-          }
-        });
-      });
-      $('button.btn-danger').click(function() {
-        var userId = $(this).data('user-id');
-        $.ajax({
-          method: 'POST',
-          url: '/users/' + userId + '/demote',
-          success: function() {
-            // update the user_type on the page
-            $('button[data-user-id="' + userId + '"]').closest('li').find('span.user-type').text('user');
-          }
-        });
-      });
-    });
-    </script>
+  
